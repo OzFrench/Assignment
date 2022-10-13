@@ -15,7 +15,7 @@ The servers defined only by their IP adress needs to be in the WinRM TrustedHost
 
 param
 (
-	[Parameter(ValuefromPipeline=$true,mandatory=$true)][string]$InputFile,
+	  [Parameter(ValuefromPipeline=$true,mandatory=$true)][string]$InputFile,
     [Parameter(ValuefromPipeline=$true,mandatory=$true)][string]$ServiceName,
     [Parameter(ValuefromPipeline=$true)][ValidateSet("Running","running","Stopped","stopped")][string]$Status
 )
