@@ -3,7 +3,7 @@ Author : Arnaud Bour
 Date : 10/12/2022
 Script : ServiceStatus.ps1
 
-Usage : ServiceStatus.ps1 -Inputfile "YourInput.file" -ServiceName "The Windows Service" [-Status "Optional"]
+Usage : ServiceStatus.ps1 -Inputfile "YourInput.file" -ServiceName "The Windows Service" -Status "Optional"
 
 Result file : "YourInput.csv".
 Error file : "YourInput.err".
@@ -13,9 +13,9 @@ The servers defined only by their IP adress needs to be in the WinRM TrustedHost
 
 #Definition of the parameters
 
-param
+param 
 (
-	  [Parameter(ValuefromPipeline=$true,mandatory=$true)][string]$InputFile,
+	[Parameter(ValuefromPipeline=$true,mandatory=$true)][string]$InputFile,
     [Parameter(ValuefromPipeline=$true,mandatory=$true)][string]$ServiceName,
     [Parameter(ValuefromPipeline=$true)][ValidateSet("Running","running","Stopped","stopped")][string]$Status
 )
@@ -49,7 +49,7 @@ function servicestatus {
   if ( $Status -eq "" )
     {
       $Stat = (Get-CimInstance -ClassName Win32_Service -Filter "Name like '$ServiceName%'" -ComputerName "$Hostname").State
-      echo "$HostName,$ServiceName,$Stat" >> $ResultFile
+      echo "`"$HostName`",`"$ServiceName`",`"$Stat`"" >> $ResultFile
     }
 #If the optional "Status" parameter is present in order to avoid the results that are not in the desired state
   else
@@ -57,7 +57,7 @@ function servicestatus {
       $Stat = (Get-CimInstance -ClassName Win32_Service -Filter "Name like '$ServiceName%'" -ComputerName "$Hostname" | Where-Object {$_.State -EQ "$Status"}).State
         if ( $Stat -ne "" )
           {
-            echo "$HostName,$ServiceName,$Stat" >> $ResultFile
+            echo "`"$HostName`",`"$ServiceName`",`"$Stat`"" >> $ResultFile
           }
     }
 }
@@ -67,7 +67,7 @@ function servicestatus {
 function testservice {
   $script:testserviceRES = ""
   $service = Get-Service -Name $ServiceName >$null 2>&1
-    if ($? -eq $false)
+    if ($? -eq $false) 
       {
         $script:testserviceRES = "KO"
         echo "$Hostname : Service $ServiceName not present" >> $ErrorFile
@@ -85,7 +85,7 @@ $script:ErrorFile = ($InputFile -split '\.',2)[0] + '.err'
 
 #Initialising the Result and the Error File
 
-echo "Machine,Service,Status" > $ResultFile
+echo '"Machine","Service","Status"' > $ResultFile
 echo $null > $ErrorFile
 
 #Main program
@@ -93,7 +93,7 @@ echo $null > $ErrorFile
 foreach ($Hostname in (Get-Content .\$Inputfile))
   {
     testhost
-
+    
     if ($testhostRES -ne "KO")
       {
         testservice
@@ -103,3 +103,4 @@ foreach ($Hostname in (Get-Content .\$Inputfile))
             }
       }
 }
+
