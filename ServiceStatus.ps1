@@ -3,7 +3,7 @@ Author : Arnaud Bour
 Date : 10/12/2022
 Script : ServiceStatus.ps1
 
-Usage : ServiceStatus.ps1 -Inputfile "YourInput.file" -ServiceName "The Windows Service" -Status "Optional"
+Usage : ServiceStatus.ps1 -Inputfile "YourInput.file" -ServiceName "The Windows Service" [-Status "Optional"]
 
 Result file : "YourInput.csv".
 Error file : "YourInput.err".
@@ -13,7 +13,7 @@ The servers defined only by their IP adress needs to be in the WinRM TrustedHost
 
 #Definition of the parameters
 
-param 
+param
 (
 	[Parameter(ValuefromPipeline=$true,mandatory=$true)][string]$InputFile,
     [Parameter(ValuefromPipeline=$true,mandatory=$true)][string]$ServiceName,
@@ -67,7 +67,7 @@ function servicestatus {
 function testservice {
   $script:testserviceRES = ""
   $service = Get-Service -Name $ServiceName >$null 2>&1
-    if ($? -eq $false) 
+    if ($? -eq $false)
       {
         $script:testserviceRES = "KO"
         echo "$Hostname : Service $ServiceName not present" >> $ErrorFile
@@ -93,7 +93,7 @@ echo $null > $ErrorFile
 foreach ($Hostname in (Get-Content .\$Inputfile))
   {
     testhost
-    
+
     if ($testhostRES -ne "KO")
       {
         testservice
@@ -103,4 +103,3 @@ foreach ($Hostname in (Get-Content .\$Inputfile))
             }
       }
 }
-
