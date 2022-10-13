@@ -7,6 +7,8 @@ Usage : ServiceStatus.ps1 -Inputfile "YourInput.file" -ServiceName "The Windows 
 
 Result file : "YourInput.csv".
 Error file : "YourInput.err".
+
+The servers defined only by their IP adress needs to be in the WinRM TrustedHosts list.
 #>
 
 #Definition of the parameters
@@ -28,7 +30,7 @@ param
     }
 }
 
- #Funstion that will ensure that the remote host is reachable
+ #Function that will ensure that the remote host is reachable
 
  function testhost {
     $script:testhostRES = ""
@@ -46,13 +48,13 @@ function servicestatus {
 #If the optional "Status" parameter is not present
   if ( $Status -eq "" )
     {
-      $Stat = (Get-Service $ServiceName -ComputerName $Hostname).Status
+      $Stat = (Get-CimInstance -ClassName Win32_Service -Filter "Name like '$ServiceName%'" -ComputerName "$Hostname").State
       echo "$HostName,$ServiceName,$Stat" >> $ResultFile
     }
 #If the optional "Status" parameter is present in order to avoid the results that are not in the desired state
   else
     {
-      $Stat = (Get-service $ServiceName -ComputerName $Hostname | Where-Object {$_.Status -EQ "$Status"}).Status
+      $Stat = (Get-CimInstance -ClassName Win32_Service -Filter "Name like '$ServiceName%'" -ComputerName "$Hostname" | Where-Object {$_.State -EQ "$Status"}).State
         if ( $Stat -ne "" )
           {
             echo "$HostName,$ServiceName,$Stat" >> $ResultFile
