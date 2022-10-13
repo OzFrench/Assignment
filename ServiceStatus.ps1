@@ -47,7 +47,7 @@ function servicestatus {
   if ( $Status -eq "" )
     {
       $Stat = (Get-Service $ServiceName -ComputerName $Hostname).Status
-      echo '"$HostName","$ServiceName","$Stat"' >> $ResultFile
+      echo "$HostName,$ServiceName,$Stat" >> $ResultFile
     }
 #If the optional "Status" parameter is present in order to avoid the results that are not in the desired state
   else
@@ -55,7 +55,7 @@ function servicestatus {
       $Stat = (Get-service $ServiceName -ComputerName $Hostname | Where-Object {$_.Status -EQ "$Status"}).Status
         if ( $Stat -ne "" )
           {
-            echo '"$HostName","$ServiceName","$Stat"' >> $ResultFile
+            echo "$HostName,$ServiceName,$Stat" >> $ResultFile
           }
     }
 }
@@ -83,7 +83,7 @@ $script:ErrorFile = ($InputFile -split '\.',2)[0] + '.err'
 
 #Initialising the Result and the Error File
 
-echo '"Machine", "Service","Status"' > $ResultFile
+echo "Machine,Service,Status" > $ResultFile
 echo $null > $ErrorFile
 
 #Main program
